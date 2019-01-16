@@ -3,6 +3,6 @@ export class App {
         console.log('Now running app...')
     }
     throw() {
-        throw new Error('Test');
+        throw new Error('Test')
     }
 }
