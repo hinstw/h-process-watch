@@ -1,2 +1,6 @@
-require('source-map-support').install();
-console.log('starting...')
+console.log('Starting...')
+require('source-map-support').install()
+import {App} from './app'
+const app = new App()
+app.run()
+app.throw()
