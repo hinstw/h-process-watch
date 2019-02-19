@@ -11,6 +11,7 @@
   "dependencies": {
     "@types/node": "^10.12.18",
     "source-map-support": "^0.5.10",
-    "typescript": "^3.2.2"
+    "typescript": "^3.2.2",
+    "xml2js": "^0.4.19"
   }
 }
