@@ -1,14 +1,23 @@
 var parseString = require('xml2js').parseString;
 
-import child_process from 'child_process'
+import child_process from 'child_process';
 import { largeSizeToText } from './text';
-import { windowsPageSize, WtOutputRoot, WtOutputInstance } from './wimcType';
+import { WtOutputRoot, WtOutputInstance, WtProperty } from './wimcType';
 
-const windowsCommand = 'wmic PROCESS GET name,PrivatePageCount /format:rawxml'
+const desiredProperties = [
+    WtProperty.name,
+    WtProperty.processId,
+    WtProperty.parentProcessId,
+    WtProperty.privatePageCount,
+];
+const desiredPropertiesCommand = desiredProperties.join(',');
+const windowsCommand = `wmic PROCESS GET ${desiredPropertiesCommand} /format:rawxml`;
 
 export class ProcessStat {
     name: string;
     privatePageCount: number;
+    processId: number;
+    parentProcessId: number;
     toString() {
         return this.name + ' ' + largeSizeToText(this.privatePageCount);
     }
@@ -29,15 +38,18 @@ export class ProcessStats {
     }
 
     private readInstances(instances: WtOutputInstance[]) {
+        const stats: ProcessStat[] = [];
         for (const instance of instances) {
             const stat = new ProcessStat();
             for (const property of instance.PROPERTY) {
-                if (property.$.NAME == 'Name')
+                if (property.$.NAME == WtProperty.name)
                     stat.name = property.VALUE[0];
-                if (property.$.NAME == 'PrivatePageCount')
+                if (property.$.NAME == WtProperty.privatePageCount)
                     stat.privatePageCount = parseInt(property.VALUE[0]);
             }
+            stats.push(stat);
             console.log(stat.toString());
         }
+        return stats;
     }
 }

@@ -1,7 +1,10 @@
 export const windowsPageSize = 0x1000
 
 export enum WtProperty {
-    parentProcessId = 'ParentProcessId'
+    name = 'Name',
+    parentProcessId = 'ParentProcessId',
+    privatePageCount = 'PrivatePageCount',
+    processId = 'ProcessId'
 }
 
 export class WtOutputRoot {
