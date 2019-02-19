@@ -52,20 +52,21 @@ export class ProcessStats {
         });
     }
 
-    private readInstances(instances: WtOutputInstance[]) {
-        const stats: ProcessStat[] = [];
-        for (const instance of instances) {
-            const stat = new ProcessStat();
-            for (const property of instance.PROPERTY) {
-                if (property.$.NAME == WtProperty.name)
-                    stat.name = property.VALUE[0];
-                if (property.$.NAME == WtProperty.privatePageCount)
-                    stat.privatePageCount = parseInt(property.VALUE[0]);
-            }
-            stats.push(stat);
+}
+
+function readInstances(instances: WtOutputInstance[]) {
+    const stats: ProcessStat[] = [];
+    for (const instance of instances) {
+        const stat = new ProcessStat();
+        for (const property of instance.PROPERTY) {
+            if (property.$.NAME == WtProperty.name)
+                stat.name = property.VALUE[0];
+            if (property.$.NAME == WtProperty.privatePageCount)
+                stat.privatePageCount = parseInt(property.VALUE[0]);
         }
-        return stats;
+        stats.push(stat);
     }
+    return stats;
 }
 
 function groupStats(stats: ProcessStat[]) {
