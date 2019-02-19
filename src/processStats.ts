@@ -88,13 +88,11 @@ function groupStats(stats: ProcessStat[]) {
         else
             selfRoot.privatePageCount += stat.privatePageCount;
     }
-    console.log(stats.length, groupedStats.length);
     return groupedStats;
 }
 
 function findSelfRoot(stat: ProcessStat, stats: ProcessStat[]) {
     const parents = findParents(stat, stats);
-
     if (parents.length > 0)
         return parents[parents.length - 1];
     else
@@ -104,9 +102,8 @@ function findSelfRoot(stat: ProcessStat, stats: ProcessStat[]) {
 function findParents(stat: ProcessStat, stats: ProcessStat[]) {
     const parents: ProcessStat[] = [];
     stats = stats.filter(s => s.processId != 0 && s.processId != null);
-    console.log(stats.length);
     while (true) {
-        const parent = stats.find(s => s.processId == stat.parentProcessId);
+        const parent = stats.find(s => s.processId == stat.parentProcessId && s.name == stat.name);
         if (parent == null)
             break;
         parents.push(parent);
