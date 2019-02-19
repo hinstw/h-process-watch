@@ -1,4 +1,4 @@
-var parseString = require('xml2js').parseString;
+const parseString = require('xml2js').parseString;
 
 import child_process from 'child_process';
 import { largeSizeToText } from './text';
@@ -21,9 +21,19 @@ export class ProcessStat {
     toString() {
         return this.name + ' ' + largeSizeToText(this.privatePageCount);
     }
+    clone() {
+        const result = new ProcessStat();
+        result.name = this.name;
+        result.privatePageCount = this.privatePageCount;
+        result.processId = this.processId;
+        result.parentProcessId = this.parentProcessId;
+    }
 }
 
 export class ProcessStats {
+    stats: ProcessStat[];
+    groupedStats: ProcessStat[];
+
     read(): Promise<any> {
         return new Promise((resolve, reject) => {
             child_process.exec(windowsCommand, (error, stdout, stderr) => {
@@ -31,7 +41,8 @@ export class ProcessStats {
                     reject(error);
                 parseString(stdout, (error, result: WtOutputRoot) => {
                     const instances = result.COMMAND.RESULTS[0].CIM[0].INSTANCE;
-                    this.readInstances(instances);
+                    this.stats = this.readInstances(instances);
+                    resolve();
                 });
             })
         });
@@ -51,5 +62,9 @@ export class ProcessStats {
             console.log(stat.toString());
         }
         return stats;
+    }
+
+    private groupStats(stats: ProcessStat) {
+
     }
 }
