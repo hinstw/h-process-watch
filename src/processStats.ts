@@ -42,7 +42,7 @@ export class ProcessStats {
                     reject(error);
                 parseString(stdout, (error, result: WtOutputRoot) => {
                     const instances = result.COMMAND.RESULTS[0].CIM[0].INSTANCE;
-                    this.stats = this.readInstances(instances);
+                    this.stats = readInstances(instances);
                     this.groupedStats = groupStats(this.stats);
                     for (const stat of this.groupedStats)
                         console.log(stat.toString());
@@ -57,16 +57,25 @@ export class ProcessStats {
 function readInstances(instances: WtOutputInstance[]) {
     const stats: ProcessStat[] = [];
     for (const instance of instances) {
-        const stat = new ProcessStat();
-        for (const property of instance.PROPERTY) {
-            if (property.$.NAME == WtProperty.name)
-                stat.name = property.VALUE[0];
-            if (property.$.NAME == WtProperty.privatePageCount)
-                stat.privatePageCount = parseInt(property.VALUE[0]);
-        }
+        const stat = readInstance(instance);
         stats.push(stat);
     }
     return stats;
+}
+
+function readInstance(instance: WtOutputInstance) {
+    const stat = new ProcessStat();
+    for (const property of instance.PROPERTY) {
+        if (property.$.NAME == WtProperty.name)
+            stat.name = property.VALUE[0];
+        if (property.$.NAME == WtProperty.processId)
+            stat.processId = parseInt(property.VALUE[0]);
+        if (property.$.NAME == WtProperty.parentProcessId)
+            stat.parentProcessId = parseInt(property.VALUE[0]);
+        if (property.$.NAME == WtProperty.privatePageCount)
+            stat.privatePageCount = parseInt(property.VALUE[0]);
+    }
+    return stat;
 }
 
 function groupStats(stats: ProcessStat[]) {
