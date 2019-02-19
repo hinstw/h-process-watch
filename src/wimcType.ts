@@ -1,19 +1,30 @@
-class WtOutputRoot {
+export const windowsPageSize = 0x1000
+
+export enum WtProperty {
+    parentProcessId = 'ParentProcessId'
+}
+
+export class WtOutputRoot {
     COMMAND: WtOutputCommand;
 }
 
-class WtOutputCommand {
+export class WtOutputCommand {
     RESULTS: WtOutputResult[];
 }
 
-class WtOutputResult {
+export class WtOutputResult {
     CIM: WtOutputCim[];
 }
 
-class WtOutputCim {
+export class WtOutputCim {
     INSTANCE: WtOutputInstance[];
 }
 
-class WtOutputInstance {
-    PROPERTY: [];
+export class WtOutputInstance {
+    PROPERTY: WtOutputProperty[];
+}
+
+export class WtOutputProperty {
+    $: { NAME: string; };
+    VALUE: any[];
 }
