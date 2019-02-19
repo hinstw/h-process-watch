@@ -1,6 +1,5 @@
 import { ProcessStats } from "./processStats";
 
-
 export class App {
     processStats: ProcessStats;
     run() {
