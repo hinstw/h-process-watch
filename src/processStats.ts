@@ -27,6 +27,7 @@ export class ProcessStat {
         result.privatePageCount = this.privatePageCount;
         result.processId = this.processId;
         result.parentProcessId = this.parentProcessId;
+        return result;
     }
 }
 
@@ -42,6 +43,9 @@ export class ProcessStats {
                 parseString(stdout, (error, result: WtOutputRoot) => {
                     const instances = result.COMMAND.RESULTS[0].CIM[0].INSTANCE;
                     this.stats = this.readInstances(instances);
+                    this.groupedStats = groupStats(this.stats);
+                    for (const stat of this.groupedStats)
+                        console.log(stat.toString());
                     resolve();
                 });
             })
@@ -59,12 +63,44 @@ export class ProcessStats {
                     stat.privatePageCount = parseInt(property.VALUE[0]);
             }
             stats.push(stat);
-            console.log(stat.toString());
         }
         return stats;
     }
+}
 
-    private groupStats(stats: ProcessStat) {
-
+function groupStats(stats: ProcessStat[]) {
+    stats = stats.map(stat => stat.clone());
+    const groupedStats: ProcessStat[] = [];
+    for (const stat of stats) {
+        const selfRoot = findSelfRoot(stat, stats);
+        if (selfRoot == null)
+            groupedStats.push(stat);
+        else
+            selfRoot.privatePageCount += stat.privatePageCount;
     }
+    console.log(stats.length, groupedStats.length);
+    return groupedStats;
+}
+
+function findSelfRoot(stat: ProcessStat, stats: ProcessStat[]) {
+    const parents = findParents(stat, stats);
+
+    if (parents.length > 0)
+        return parents[parents.length - 1];
+    else
+        return null;
+}
+
+function findParents(stat: ProcessStat, stats: ProcessStat[]) {
+    const parents: ProcessStat[] = [];
+    stats = stats.filter(s => s.processId != 0 && s.processId != null);
+    console.log(stats.length);
+    while (true) {
+        const parent = stats.find(s => s.processId == stat.parentProcessId);
+        if (parent == null)
+            break;
+        parents.push(parent);
+        stat = parent;
+    }
+    return parents;
 }
